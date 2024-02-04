@@ -7,7 +7,10 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  checkID,
 } = require('../controllers/userController');
+
+router.param('id', checkID); // this middleware is used to check if the id parameter is valid
 
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
