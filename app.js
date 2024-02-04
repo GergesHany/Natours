@@ -38,8 +38,3 @@ app.use('/api/v1/tours', tourRouter); // mounting the router on a new route
 app.use('/api/v1/users', userRouter); // mounting the router on a new route
 
 module.exports = app;
-
-// 4) START SERVER
-app.listen(port, () => {
-  console.log(`App running on port ${port}...`);
-});
