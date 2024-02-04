@@ -1,8 +1,16 @@
-const fs = require('fs');
 const express = require('express');
+
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
+
+const morgan = require('morgan'); // request logger middleware
+
 const app = express();
 
+// ------------------------------------------------------------------------------------------
+
 const port = 3000;
+app.use(morgan('dev')); // log the request method, the request url, the status code, the response time, and the size of the response body to the console
 app.use(express.json());
 /*
   app.use(express.json()); 
@@ -11,104 +19,27 @@ app.use(express.json());
   without this middleware, the req.body object would be undefined, and we would not be able to access the data sent in the request body.
 */
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
+// 1) MIDDLEWARES
 
-const getAllTours = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-};
+// this middleware is used to log the request method and the request url to the console
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 👋');
+  next();
+});
 
-const getTour = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id === id);
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
+// 3) ROUTES
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-};
+app.use('/api/v1/tours', tourRouter); // mounting the router on a new route
+app.use('/api/v1/users', userRouter); // mounting the router on a new route
 
-const createTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
-  tours.push(newTour);
+module.exports = app;
 
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      console.log(JSON.stringify(newTour));
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-};
-
-const updateTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      message: 'Updated tour here',
-    },
-  });
-};
-
-const deleteTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
-
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-};
-
-// app.get('/api/v1/tours', (req, res) => {});
-// app.post('/api/v1/tours', (req, res) => {});
-// app.get('/api/v1/tours/:id', (req, res) => {});
-// app.patch('/api/v1/tours/:id', (req, res) => {});
-// app.delete('/api/v1/tours/:id', (req, res) => {});
-
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
-
+// 4) START SERVER
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
