@@ -32,7 +32,7 @@ exports.createUser = function (req, res) {
   users.push(newUser);
 
   fs.writeFile(
-    `${__dirname}/dev-data/data/users.json`,
+    `${__dirname}/../dev-data/data/users.json`,
     JSON.stringify(users),
     (err) => {
       res.status(201).json({
