@@ -18,41 +18,8 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((con) => {
-    console.log(con.connections);
+    // console.log(con.connections);
     console.log('DB connection successful!');
-  });
-
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'],
-    unique: true,
-  },
-  rating: {
-    type: Number,
-    default: 4.5,
-  },
-  Price: {
-    type: Number,
-    default: 4.5,
-  },
-});
-
-const Tour = mongoose.model('Tour', tourSchema);
-
-const testTour = new Tour({
-  name: 'The Park Camper 2',
-  rating: 4.7,
-  price: 997,
-});
-
-testTour
-  .save()
-  .then((doc) => {
-    console.log(doc);
-  })
-  .catch((err) => {
-    console.log('ERROR:', err);
   });
 
 const port = process.env.PORT || 3000; // if the environment variable PORT is not defined, the port will be set to 3000
