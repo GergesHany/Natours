@@ -1,23 +1,16 @@
 const express = require('express');
 const router = express.Router(); // creating a new router
+const tourController = require('../controllers/tourController');
 
-const {
-  getAllTours,
-  createTour,
-  getTour,
-  updateTour,
-  deleteTour,
-  checkID,
-  checkBody,
-} = require('../controllers/tourController');
+router.param('id', tourController.checkID); // this middleware is used to check if the id parameter is valid
 
-router.param('id', checkID); // this middleware is used to check if the id parameter is valid
-
-// Create a checkBody middleware
-// Check if body contains the name and price property
-// If not, send back 400 (bad request)
-
-router.route('/').get(getAllTours).post(checkBody, createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
-
+router
+  .route('/')
+  .get(tourController.getAllTours)
+  .post(tourController.checkBody, tourController.createTour);
+router
+  .route('/:id')
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 module.exports = router;

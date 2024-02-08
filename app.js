@@ -9,8 +9,11 @@ const app = express();
 
 // ------------------------------------------------------------------------------------------
 
-const port = 3000;
-app.use(morgan('dev')); // log the request method, the request url, the status code, the response time, and the size of the response body to the console
+// this middleware is used to log the request method and the request url to the console in development mode only
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
 /*
   app.use(express.json()); 
@@ -19,7 +22,7 @@ app.use(express.json());
   without this middleware, the req.body object would be undefined, and we would not be able to access the data sent in the request body.
 */
 
-// 1) MIDDLEWARES
+app.use(express.static(`${__dirname}/public`)); // serving static files
 
 // this middleware is used to log the request method and the request url to the console
 app.use((req, res, next) => {
