@@ -23,20 +23,12 @@ app.use(express.json());
 */
 
 app.use(express.static(`${__dirname}/public`)); // serving static files
-
-// this middleware is used to log the request method and the request url to the console
-app.use((req, res, next) => {
-  console.log('Hello from the middleware 👋');
-  next();
-});
-
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
 // 3) ROUTES
-
 app.use('/api/v1/tours', tourRouter); // mounting the router on a new route
 app.use('/api/v1/users', userRouter); // mounting the router on a new route
 
