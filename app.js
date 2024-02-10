@@ -1,7 +1,9 @@
 const express = require('express');
 
+const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const globalErrorHandler = require('./controllers/errorController');
 
 const morgan = require('morgan'); // request logger middleware
 
@@ -36,22 +38,11 @@ app.use('/api/v1/users', userRouter); // mounting the router on a new route
 
 // this middleware is used to handle all the requests that are not handled by the routers
 app.all('*', (req, res, next) => {
-  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  err.statusCode = 404; // setting the status code of the error
-  err.status = 'fail'; // setting the status of the error
-  next(err); // passing the error to the next function
+  // if the next function is called with an argument, it will be treated as an error
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 // this middleware is used to handle all the errors that are passed to the next function
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500; // if the error does not have a status code, it will be set to 500
-  err.status = err.status || 'error'; // if the error does not have a status, it will be set to 'error'
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-  next();
-});
+app.use(globalErrorHandler);
 
 module.exports = app;
