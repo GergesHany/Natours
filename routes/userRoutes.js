@@ -1,18 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-  getAllUsers,
-  createUser,
-  getUser,
-  updateUser,
-  deleteUser,
-  checkID,
-} = require('../controllers/userController');
+const authController = require('../controllers/authController');
+const userController = require('../controllers/userController');
+// router.param('id', userController.checkID); // this middleware is used to check if the id parameter is valid
 
-router.param('id', checkID); // this middleware is used to check if the id parameter is valid
-
-router.route('/').get(getAllUsers).post(createUser);
-router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+router.post('/signup', authController.signup);
+router.route('/').get(userController.getAllUsers).post(userController.createUser);
+router.route('/:id').get(userController.getUser).patch(userController.updateUser).delete(userController.deleteUser);
 
 module.exports = router;
