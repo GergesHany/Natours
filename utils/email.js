@@ -9,6 +9,7 @@ const sendEmail = async (options) => {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    authMethod: 'login',
   });
 
   // 2) Define the email options
@@ -23,7 +24,7 @@ const sendEmail = async (options) => {
   // 3) Actually send the email with error handling
   try {
     console.log(`Sending email to ${email} with subject: ${subject}`);
-    // await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
     console.log('Email sent successfully!');
   } catch (error) {
     console.error('Error sending email:', error);
