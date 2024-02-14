@@ -10,8 +10,8 @@
   - A user can be either a regular user or an admin or a lead guide or a guide.
   - When a user signs up, that user by default regular user.
 #### Tour
-  - Manage booking, check tour map, check users' reviews and rating
-  - Tours can be created by an admin user or a lead-guide.
   - Tours can be seen by every user.
-  - Tours can be updated by an admin user or a lead guide.
-  - Tours can be deleted by an admin user or a lead-guide.
+  - Manage booking, check tour map, check users' reviews and rating
+  - Tours can be `created` by an admin user or a lead-guide.
+  - Tours can be `updated` by an admin user or a lead guide.
+  - Tours can be `deleted` by an admin user or a lead-guide.
