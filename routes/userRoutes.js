@@ -3,6 +3,8 @@ const router = express.Router();
 
 const authController = require('../controllers/authController');
 const userController = require('../controllers/userController');
+const reviewController = require('../controllers/reviewController');
+
 // router.param('id', userController.checkID); // this middleware is used to check if the id parameter is valid
 
 router.post('/signup', authController.signup);
@@ -22,5 +24,17 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
+
+// POST /tour/234fad4/reviews
+// GET /tour/234fad4/reviews
+// GET /tour/234fad4/reviews/948fj94
+
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReviews,
+  );
 
 module.exports = router;

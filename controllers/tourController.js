@@ -11,14 +11,19 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = catchAsync(async (req, res) => {
   // EXECUTE QUERY
-  const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
+  const features = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
   const tours = await features.query;
 
   res.status(200).json({ status: 'success', results: tours.length, data: { tours } });
 });
 
 exports.getTour = catchAsync(async (req, res) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
+  // populate('guides') -> populate the field guides with the actual data
   if (!tour) {
     return next(new AppError('No tour found with that ID', 404));
   }
@@ -76,7 +81,7 @@ exports.getTourStats = catchAsync(async (req, res) => {
   res.status(200).json({ status: 'success', data: { stats } });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res) => {
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([
