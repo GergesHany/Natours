@@ -41,3 +41,7 @@
   - A regular user `can not add a tour` to their list of favorite tours when it is already a favorite.
 
 #### Credit card Payment
+
+
+<hr>
+
