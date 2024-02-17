@@ -35,14 +35,6 @@
   - Regular users `can not review` the same tour twice.
   - An admin `can delete` any review.
 
-#### Favorite Tours
-  - A regular user `can add` any of their booked tours to their list of favorite tours.
-  - A regular user `can remove` a tour from their list of favorite tours.
-  - A regular user `can not add a tour` to their list of favorite tours when it is already a favorite.
-
-#### Credit card Payment
-
-
 <hr>
 
 ### Check [Natours API Documentation](https://documenter.getpostman.com/view/32746526/2sA2r813r3) for more info.
