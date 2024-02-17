@@ -45,3 +45,7 @@
 
 <hr>
 
+### Check [Natours API Documentation](https://documenter.getpostman.com/view/32746526/2sA2r813r3) for more info.
+
+<hr>
+
