@@ -84,6 +84,14 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000), // make the cookie expire in 10 seconds
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 /*
   - Protect middleware use to protect routes from unauthorized access
   -  by checking if the user is logged in or not
@@ -96,6 +104,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -124,9 +134,41 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = CurrentUser;
-
+  res.locals.user = CurrentUser; // this is used to pass the user data to the pug templates
   next();
 });
+
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
+
+      // 2) Check if user still exists
+      const CurrentUser = await User.findById(decoded.id);
+      if (!CurrentUser) {
+        return next();
+      }
+
+      // 3) Check if user chnaged password after the token was issued
+
+      // iat -> is the time the token was issued
+      if (CurrentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = CurrentUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {

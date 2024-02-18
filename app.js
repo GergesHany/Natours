@@ -1,9 +1,12 @@
+const path = require('path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewsRouter = require('./routes/viewsRoutes');
+const cookieParser = require('cookie-parser');
 
 const globalErrorHandler = require('./controllers/errorController');
 const helmet = require('helmet'); // security HTTP headers middleware
@@ -14,9 +17,17 @@ const hpp = require('hpp');
 
 const app = express();
 
+// setting the view engine to pug so that we don't have to specify the file extension when rendering the templates
+app.set('view engine', 'pug');
+
+// setting the path to the views folder
+app.set('views', path.join(__dirname, 'views'));
+
 // ------------------------------------------------------------------------------------------
 
 // 1) GLOBAL MIDDLEWARES
+
+app.use(express.static(path.join(__dirname, 'public'))); // serving static files
 
 app.use(helmet()); // set security HTTP headers
 
@@ -36,6 +47,14 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+// this middleware is used to parse the incoming request body,
+// which is in URL-encoded format, into a JavaScript object before it is passed to the route handler.
+
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// this middleware is used to parse the cookies from the request
+app.use(cookieParser());
 
 /*
   app.use(express.json()); 
@@ -64,13 +83,15 @@ app.use(
   }),
 );
 
-app.use(express.static(`${__dirname}/public`)); // serving static files
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 
 // 3) ROUTES
+
+app.use('/', viewsRouter);
 app.use('/api/v1/tours', tourRouter); // mounting the router on a new route
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

@@ -133,12 +133,13 @@ tourSchema.virtual('reviews', {
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
-/*
 tourSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true });
+  this.slug = this.name.split(' ').join('-');
+  this.slug = this.slug.toLowerCase();
   next();
 });
 
+/*
 tourSchema.pre('save', async function (next) {
   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
   this.guides = await Promise.all(guidesPromises);
