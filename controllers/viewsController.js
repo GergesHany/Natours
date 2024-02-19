@@ -22,7 +22,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
     fields: 'review rating user',
   });
 
-  console.log(req.params.slug);
 
   if (!tour) {
     return next(new AppError('There is no tour with that name.', 404));

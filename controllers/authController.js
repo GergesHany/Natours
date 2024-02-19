@@ -19,9 +19,7 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user.id);
 
   const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
-    ),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
 
@@ -50,13 +48,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
 
-  console.log(
-    req.body.name,
-    req.body.email,
-    req.body.password,
-    req.body.passwordConfirm,
-    req.body.role,
-  );
+  console.log(req.body.name, req.body.email, req.body.password, req.body.passwordConfirm, req.body.role);
 
   createSendToken(newUser, 201, res);
 });
@@ -64,7 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  console.log(email, password);
+  // console.log(email, password);
 
   // 1) Check if email and password exist
   if (!email || !password) {
@@ -118,18 +110,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   // 3) Check if user still exists
   const CurrentUser = await User.findById(decoded.id);
   if (!CurrentUser) {
-    return next(
-      new AppError('The user belonging to this token does no longer exist.', 401),
-    );
+    return next(new AppError('The user belonging to this token does no longer exist.', 401));
   }
 
   // 4) Cheak if user chnaged password after the token was issued
 
   // iat -> is the time the token was issued
   if (CurrentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password! Please log in again.', 401),
-    );
+    return next(new AppError('User recently changed password! Please log in again.', 401));
   }
 
   // GRANT ACCESS TO PROTECTED ROUTE
@@ -142,10 +130,7 @@ exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
       // 1) verify token
-      const decoded = await promisify(jwt.verify)(
-        req.cookies.jwt,
-        process.env.JWT_SECRET,
-      );
+      const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
       // 2) Check if user still exists
       const CurrentUser = await User.findById(decoded.id);
@@ -192,9 +177,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    'host',
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
@@ -211,10 +194,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
-    return next(
-      new AppError('There was an error sending the email. Try again later!'),
-      500,
-    );
+    return next(new AppError('There was an error sending the email. Try again later!'), 500);
   }
 });
 
