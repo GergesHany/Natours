@@ -31,14 +31,18 @@ router
   )
   .post(tourController.createTour);
 
-router
-  .route('/top-5-cheap')
-  .get(tourController.aliasTopTours, tourController.getAllTours);
+router.route('/top-5-cheap').get(tourController.aliasTopTours, tourController.getAllTours);
 
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.uploadTourImages,
+    tourController.resizeTourImages,
+    tourController.updateTour,
+  )
   .delete(tourController.deleteTour);
 
 // Nested routes with Express
