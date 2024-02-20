@@ -6,6 +6,8 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewsRouter = require('./routes/viewsRoutes');
+const bookingRoutr = require('./routes/bookingRoutes');
+
 const cookieParser = require('cookie-parser');
 
 const globalErrorHandler = require('./controllers/errorController');
@@ -72,7 +74,14 @@ app.use(xss());
 // hpp -> HTTP Parameter Pollution
 app.use(
   hpp({
-    whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'],
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
   }),
 );
 
@@ -88,6 +97,7 @@ app.use('/', viewsRouter);
 app.use('/api/v1/tours', tourRouter); // mounting the router on a new route
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRoutr);
 
 // 4) ERROR HANDLING MIDDLEWARE
 
